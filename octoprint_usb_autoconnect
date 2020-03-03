@@ -6,6 +6,8 @@ if [ ! -f ${CONFIGFILE} ]; then
     exit 1
 fi
 
+sleep 3
+
 # Load config file
 . ${CONFIGFILE}
 
