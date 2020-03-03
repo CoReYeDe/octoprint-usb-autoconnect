@@ -10,32 +10,29 @@ Simple bash script (and systemd service) to automatically reconnect the serial c
 1. On your OctoPrint/OctoPi, clone this repository - make sure you're working as `root` user:
 
     ```shell
-    sudo su
-    git clone https://github.com/frdmn/octoprint-usb-autoconnect /usr/local/src/octoprint-usb-autoconnect
+    sudo git clone https://github.com/CoReYeDe/octoprint-usb-autoconnect /usr/local/src/octoprint-usb-autoconnect
     ```
 
 2. Obtain your API key from [OctoPrint settings](https://up.frd.mn/Fcjb2ihnru.jpg), copy and adjust the default configuration file:
 
     ```shell
-    cp /usr/local/src/octoprint-usb-autoconnect/octoprint_usb_autoconnect.conf.sample /usr/local/src/octoprint-usb-autoconnect/octoprint_usb_autoconnect.conf
-    editor /usr/local/src/octoprint-usb-autoconnect/octoprint_usb_autoconnect.conf
+    sudo cp /usr/local/src/octoprint-usb-autoconnect/octoprint_usb_autoconnect.conf.sample /usr/local/src/octoprint-usb-autoconnect/octoprint_usb_autoconnect.conf
+    sudo editor /usr/local/src/octoprint-usb-autoconnect/octoprint_usb_autoconnect.conf
     ```
 
-3. Symlink (or copy) script and service:
 
     ```shell
-    ln -s /usr/local/src/octoprint-usb-autoconnect/octoprint_usb_autoconnect /usr/local/bin/octoprint_usb_autoconnect
-    ln -s /usr/local/src/octoprint-usb-autoconnect/octoprint_usb_autoconnect.service /etc/systemd/system/octoprint_usb_autoconnect.service
+    sudo ln -s /usr/local/src/octoprint-usb-autoconnect/octoprint_usb_autoconnect /usr/local/bin/octoprint_usb_autoconnect
     ```
 
 4. Create the `udev` USB hook:
 
     ```shell
-    editor /etc/udev/rules.d/40-octoprint_usb_autoconnect.rules
+    sudo editor /etc/udev/rules.d/40-octoprint_usb_autoconnect.rules
     ```
 
     ```
-    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="6001", TAG+="systemd", ENV{SYSTEMD_WANTS}="octoprint_usb_autoconnect.service"
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="6001", RUN+="/usr/local/bin/octoprint_usb_autoconnect"
     ```
 
     (Please note that the hook above is for an Creality Ender-3, if you have a different printer you can use `lsusb` and `lsusb -vs 00X:00Y` to find the proper `idVendor` and `idProduct` numbers. See "[Find out idVendor / idProduct](#find-out-idvendor--idproduct)" for more more detailed guide.)
@@ -43,8 +40,8 @@ Simple bash script (and systemd service) to automatically reconnect the serial c
 5. Activate new `udev` rules and restart service
 
     ```shell
-    udevadm control --reload-rules
-    systemctl restart systemd-udevd.service
+    sudo udevadm control --reload-rules
+    sudo systemctl restart systemd-udevd.service
     ```
 
 ## Troubleshooting
